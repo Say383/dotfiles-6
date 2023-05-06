@@ -73,13 +73,12 @@ import Xmobar.Run.Actions (stripActions)
 -- Bindings
 myKeys XConfig{..} = M.fromList $
     -- running apps
-    [ ((altMask .|. controlMask, xK_r   ), unGrab >> spawnTerm terminal)
-    , ((modMask,               xK_Menu  ), unGrab >> spawnTerm terminal)
+    [ ((modMask,               xK_Menu  ), unGrab >> spawnTerm terminal)
     , ((0,                     xK_Menu  ), unGrab >> spawnApp "rofi -show run")
     , ((altMask,               xK_Menu  ), unGrab >> spawnApp "rofi -show drun")
 
     -- various rofi tools
-    , ((controlMask,           xK_Menu  ), unGrab >> spawnExec "rofi-window")
+    , ((ctrlMask,              xK_Menu  ), unGrab >> spawnExec "rofi-window")
     , ((modMask,               xK_e     ), unGrab >> spawnExec "rofi-emoji-menu")
     , ((modMask .|. shiftMask, xK_e     ), unGrab >> spawnExec "rofi-emoji-sign")
     , ((modMask,               xK_p     ), unGrab >> spawnExec "passmenu")
@@ -109,9 +108,9 @@ myKeys XConfig{..} = M.fromList $
     , ((0,         xF86XK_TouchpadToggle), spawnExec "liskin-touchpad-toggle")
     , ((0,         xF86XK_WebCam        ), spawnExec "liskin-media toggle-camera")
     , ((0,         xF86XK_Favorites     ), spawnExec "liskin-media toggle-camera")
-    , ((controlMask, xF86XK_WebCam      ), spawnExec "liskin-touchscreen-toggle")
+    , ((ctrlMask,  xF86XK_WebCam        ), spawnExec "liskin-touchscreen-toggle")
     , ((0,         xF86XK_Display       ), spawnExec "layout-auto layout-vertical")
-    , ((controlMask, xF86XK_Display     ), spawnExec "layout-normal")
+    , ((ctrlMask,  xF86XK_Display       ), spawnExec "layout-normal")
     , ((0,         xF86XK_Tools         ), spawn "sleep 0.5; xset dpms force off")
     , ((shiftMask, xK_Menu              ), unGrab >> spawnExec "flameshot gui")
     , ((0,         xK_Print             ), unGrab >> spawnExec "flameshot gui")
@@ -130,8 +129,8 @@ myKeys XConfig{..} = M.fromList $
 
     -- workspace/screen focus changes
     , ((modMask,                 xK_n     ), toggleWS    >> up)
-    , ((modMask .|. controlMask, xK_Left  ), prevWS      >> up)
-    , ((modMask .|. controlMask, xK_Right ), nextWS      >> up)
+    , ((modMask .|. ctrlMask ,   xK_Left  ), prevWS      >> up)
+    , ((modMask .|. ctrlMask ,   xK_Right ), nextWS      >> up)
     , ((modMask .|. shiftMask,   xK_Left  ), swapTo Prev >> up)
     , ((modMask .|. shiftMask,   xK_Right ), swapTo Next >> up)
     , ((modMask,                 xK_Tab   ), nextScreen  >> up)
@@ -163,8 +162,8 @@ myKeys XConfig{..} = M.fromList $
     -- toggles
     , ((modMask,               xK_f     ), toggleFloatNext >> runLogHook)
     , ((modMask .|. shiftMask, xK_f     ), toggleFloatAllNew >> runLogHook)
-    , ((modMask              , xK_x     ), sendMessage (ToggleStrut D))
     , ((modMask              , xK_z     ), sendMessage ToggleStruts)
+    , ((modMask .|. ctrlMask , xK_z     ), sendMessage (ToggleStrut D))
     , ((modMask .|. shiftMask, xK_z     ), withFocused toggleBorder >> refresh)
 
     -- workspace dir and name
@@ -176,7 +175,7 @@ myKeys XConfig{..} = M.fromList $
     , ((modMask              , xK_q     ), restart (myHome ++ "/bin/xmonad") True)
 
     -- the end
-    , ((modMask .|. altMask .|. controlMask, xK_q), io (exitWith ExitSuccess))
+    , ((modMask .|. altMask .|. ctrlMask, xK_q), io (exitWith ExitSuccess))
     ] ++
     -- focus changes
     [ ((modMask .|. m, k), P.defile (focusNth myLayout i swap) >> up)
@@ -186,11 +185,11 @@ myKeys XConfig{..} = M.fromList $
     -- workspace/screen focus changes
     [ ((m, k), P.defile f >> up)
         | (i, k) <- zip workspaces [xK_F1 .. xK_F12]
-        , (f, m) <- [(P.view i, altMask), (P.shift i <> P.view i, controlMask)]
+        , (f, m) <- [(P.view i, altMask), (P.shift i <> P.view i, ctrlMask)]
     ] ++
     [ ((m, k), P.defile f >> up)
         | (i, k) <- zip (drop 12 workspaces) [xK_F1 .. xK_F12]
-        , (f, m) <- [(P.view i, modMask), (P.shift i <> P.view i, modMask .|. controlMask)]
+        , (f, m) <- [(P.view i, modMask), (P.shift i <> P.view i, modMask .|. ctrlMask)]
     ] ++
     [ ((modMask .|. m, k), focusNthScreen i greedy >> up)
         | (i, k) <- zip [0..] [xK_a, xK_s, xK_d]
@@ -198,6 +197,7 @@ myKeys XConfig{..} = M.fromList $
     ]
   where
     altMask = mod1Mask
+    ctrlMask = controlMask
 
 myMouseBindings (XConfig{modMask}) = M.fromList $
     [ ((modMask, button1), (\w -> focus w >> mouseMoveWindow w >> windows W.shiftMaster))
